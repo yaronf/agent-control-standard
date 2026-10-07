@@ -185,6 +185,30 @@ From the rest of the docs: the wire is paradigm-neutral (`policy_data` / `reason
 
 ---
 
+## Clarify whether Approver is optional and who resolves ASK
+
+**Where:** `docs/concepts/agents.md` (Approver); Instrument §9 / §9.2; ASK as Core MUST-support disposition
+
+**Notes:** Unclear whether an Approver is always required when ASK is used, or optional. Two models are mixed: (1) Concepts/§9 — the Guardian consults a third-party Approver (`ask_details.approver` endpoint) while the Observed Agent pauses; (2) §9.2 — some Observed Agents "route" ASK / need "approver UX", which implies ASK is returned to the main agent for local resolution (e.g. IDE user). Spell out whether the Guardian MAY return `ask` to the Observed Agent without a designated Approver, who presents the approval UI, and when Approver may be omitted entirely (e.g. never raise ASK; or substitute DEFER/DENY only).
+
+---
+
+## Rewrite the opaque "trust basis, not that it arrived" sentence
+
+**Where:** `docs/concepts/agents.md` — Trust between agents: "How much weight a given fact carries depends on its trust basis, not on the fact that it arrived."
+
+**Notes:** The last sentence is opaque without already knowing [Trust basis](docs/concepts/trust.md). Say plainly that arrival on the wire does not make a claim true — reliance follows how the fact was produced (asserted vs framework-attached vs cryptographically attested), and point at Trust basis. Do not rely on "weight" / "trust basis" jargon in the punchline.
+
+---
+
+## Clarify Guardian identity vs the policy (and policy-author)
+
+**Where:** `docs/concepts/identity.md` — "Guardian identity: which policy authority is deciding."; also `docs/topics/core_concepts.md`
+
+**Notes:** Wording makes Guardian identity sound like "the policy." Elsewhere ACS keeps three distinct: Observed Agent, Guardian, and **policy-author** (conformance: policy-author ≠ Guardian). Spell out that Guardian identity is the deciding *runtime/party* (its own principal), not the policy document and not the policy author — and say what (if anything) carries that identity on the wire in v0.1.
+
+---
+
 ## (Title of next comment)
 
 **Where:**
