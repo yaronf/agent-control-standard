@@ -3,6 +3,20 @@
 Working notes from reviewing the local docs preview (`http://127.0.0.1:8000/`).
 Each `##` heading is one comment; titles are issue-ready.
 
+**Open-issue check:** Before keeping a comment, search open issues on [`GenAI-Security-Project/agent-control-standard`](https://github.com/GenAI-Security-Project/agent-control-standard/issues). Drop the comment if an open issue fully covers it (same ask). Related-but-narrower issues do not count as duplicates.
+
+Checked against open issues (2026-10-08): no comment fully duplicates an open issue. Closest overlaps (kept): large-payload note ↔ [#155](https://github.com/GenAI-Security-Project/agent-control-standard/issues/155) (truncation only); Approver/ASK clarity ↔ [#175](https://github.com/GenAI-Security-Project/agent-control-standard/issues/175) / [#51](https://github.com/GenAI-Security-Project/agent-control-standard/issues/51); MODIFY/ASK on handshake ↔ [#147](https://github.com/GenAI-Security-Project/agent-control-standard/issues/147) (substitution representation, not ClientHello declaration); scope/audience ↔ [#133](https://github.com/GenAI-Security-Project/agent-control-standard/issues/133) (FAQ page, not agent-class scope).
+
+## Top 5
+
+Curated as we go; re-rank when a new finding outranks an entry below.
+
+1. [Define ACS scope and target audience across agent classes](#define-acs-scope-and-target-audience-across-agent-classes) — who the standard is for is never stated.
+2. [Call the HMAC baseline a MAC, and justify why not ECDSA-P256](#call-the-hmac-baseline-a-mac-and-justify-why-not-ecdsa-p256) — Core integrity floor is misnamed and under-justified.
+3. [Put MODIFY (and ASK) capability on the handshake wire](#put-modify-and-ask-capability-on-the-handshake-wire) — Core negotiates capabilities, then leaves these off the wire.
+4. [Clarify what control paradigms mean for implementers](#clarify-what-control-paradigms-mean-for-implementers) — IBAC/FIDES/CaMeL/AARM read like a product matrix, not optional citation styles.
+5. [Separate chain-integrity forensics from chain-based policy enforcement](#separate-chain-integrity-forensics-from-chain-based-policy-enforcement) — naming chains helps audit; deep-chain policy is unproven.
+
 ---
 
 ## Add A2A hook pages to the MkDocs nav
@@ -206,6 +220,56 @@ From the rest of the docs: the wire is paradigm-neutral (`policy_data` / `reason
 **Where:** `docs/concepts/identity.md` — "Guardian identity: which policy authority is deciding."; also `docs/topics/core_concepts.md`
 
 **Notes:** Wording makes Guardian identity sound like "the policy." Elsewhere ACS keeps three distinct: Observed Agent, Guardian, and **policy-author** (conformance: policy-author ≠ Guardian). Spell out that Guardian identity is the deciding *runtime/party* (its own principal), not the policy document and not the policy author — and say what (if anything) carries that identity on the wire in v0.1.
+
+---
+
+## Fix broken lead sentence on Identity overview
+
+**Where:** `docs/identity/overview.md` — "There are 5 unique identity challenges that this standard aims to solve, where existing use cases that traditional identity models cannot support."
+
+**Notes:** Editorial: the clause after the comma is ungrammatical (dangling "where … that …"). Rewrite into clear prose — e.g. five challenges that traditional identity models cannot support for agent use cases — and drop filler ("unique", "aims to solve") per STYLE.md.
+
+---
+
+## Drop the false "build-time vs execute-time supply chain" claim
+
+**Where:** `docs/identity/overview.md` — "The supply chain you signed off on at build time is not the supply chain that executes."
+
+**Notes:** Wishy-washy and misleading. Tools, runtime environment, and often prompts are stable; this is not primarily a supply-chain problem. The real point is non-deterministic *control flow* / action composition at runtime (which tool, order, arguments). Rewrite without the supply-chain metaphor.
+
+---
+
+## Do not imply agentic identity stops the "valid token, bad outcome" failure class
+
+**Where:** `docs/identity/overview.md` — "Agent systems are introducing a new class of failures where every token is valid, every API call is authorized, and the outcome is still a security incident." (and the Unit 42 example that follows)
+
+**Notes:** The failure class is real, but agentic identity does not solve it — it enables better governance and forensics (who acted, under which chain/intent). Prompt injection and similar attacks still succeed against valid credentials. Say that clearly so readers do not think naming/chaining identity closes the incident class.
+
+Also, these two sentences do not follow: "The failure occurred because the runtime could not distinguish user intent from adversarial instructions introduced during execution. This illustrates the central identity challenge of agent systems." Failure to separate user intent from injected instructions is a runtime-control / intent-enforcement problem, not (by itself) an identity challenge. Either retarget the punchline to Instrument/Intent, or explain the actual identity-shaped gap the example is meant to show.
+
+---
+
+## Restructure the five identity-challenges table for readability
+
+**Where:** `docs/identity/overview.md` — "The 5 Unique Runtime Identity Challenges for Agents" table
+
+**Notes:** Editorial: cells are long multi-paragraph "poems" (threat narrative, standards gap, desired outcome, status crammed into one row). Hard to scan in MkDocs. Prefer one short row per challenge with a link into a dedicated subsection (or definition list / cards), keeping the comparison surface tight.
+
+---
+
+## Stop calling the identity challenges "unique"
+
+**Where:** `docs/identity/overview.md` — "5 Unique Runtime Identity Challenges" (heading and body); at least Over-Privilege and Token Theft Resistance are long-standing IAM problems
+
+**Notes:** Drop the uniqueness claim. The challenges are real; they are not unique to agents.
+
+---
+
+## Separate chain-integrity forensics from chain-based policy enforcement
+
+**Where:** `docs/identity/overview.md` — Chain Integrity challenge (and related identity-standards prose)
+
+**Notes:** Naming and verifying a delegation chain is clearly useful for forensics. It is much less clear that real-life policy enforcement can be driven by long, complicated chains. Human-authored policies cannot reasonably express rules over deep chains, and there is little evidence of other authz systems that make effective runtime use of them. Split the ask: audit/reconstructability vs enforcement, and do not treat "verify the full chain at every hop" as an obvious policy input without showing how Guardians would consume it.
 
 ---
 
